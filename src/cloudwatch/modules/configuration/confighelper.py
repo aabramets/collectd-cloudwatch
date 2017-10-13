@@ -77,6 +77,7 @@ class ConfigHelper(object):
         self.metadata_reader = MetadataReader(self._metadata_server)
         self._load_credentials()
         self._load_region()
+        self._load_instance()
         self._load_hostname()
         self._load_proxy_server_name()
         self._load_proxy_server_port()
@@ -125,20 +126,26 @@ class ConfigHelper(object):
                 self.region = self.metadata_reader.get_region()
             except Exception as e:
                 ConfigHelper._LOGGER.warning("Cannot retrieve region from the local metadata server. Cause: " + str(e))
-    
+
+    def _load_instance(self):
+        """
+        Try to retrieve Instance ID from local metadata service.
+        """
+        try:
+            self.instance = self.metadata_reader.get_instance_id()
+        except Exception as e:
+            ConfigHelper._LOGGER.warning("Cannot retrieve Instance ID from the local metadata server. Cause: " + str(e) +
+                                         " Using host information provided by Collectd.")
+
     def _load_hostname(self):
         """ 
         Load host from the configuration file, if configuration file does not contain host entry 
-        then try to retrieve Instance ID from local metadata service. 
+        then put Instance ID.
         """
         if self.config_reader.host:
             self.host = self.config_reader.host
         else:
-            try:
-                self.host = self.metadata_reader.get_instance_id()
-            except Exception as e:
-                ConfigHelper._LOGGER.warning("Cannot retrieve Instance ID from the local metadata server. Cause: " + str(e) +  
-                    " Using host information provided by Collectd.")
+            self.host = self.instance
 
     def _set_ec2_endpoint(self):
         """ Creates endpoint from region information """

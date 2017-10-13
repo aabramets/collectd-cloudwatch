@@ -132,7 +132,7 @@ class MetricDataBuilder(object):
         if self.config.push_constant:
             dimensions["FixedDimension"] = self.config.constant_dimension_value
         if self.config.push_instance:
-            dimensions["InstanceId"] = self.vl.host
+            dimensions["InstanceId"] = self.config.instance
         return dimensions
 
     def _get_plugin_instance_dimension(self):
