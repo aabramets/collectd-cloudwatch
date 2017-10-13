@@ -46,6 +46,7 @@ class ConfigHelper(object):
         self.pass_through = False
         self.push_asg = False
         self.push_constant = False
+        self.push_instance = False
         self.constant_dimension_value = ''
         self.enable_high_resolution_metrics = False
         self.flush_interval_in_seconds = ''
@@ -88,6 +89,7 @@ class ConfigHelper(object):
         self.pass_through = self.config_reader.pass_through
         self.push_asg = self.config_reader.push_asg
         self.push_constant = self.config_reader.push_constant
+        self.push_instance = self.config_reader.push_instance
         self.constant_dimension_value = self.config_reader.constant_dimension_value
         self._check_configuration_integrity()
     

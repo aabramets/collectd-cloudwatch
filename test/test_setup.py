@@ -143,6 +143,7 @@ class NonInteractiveTests(unittest.TestCase):
     installation_method = 'recommended'
     push_asg = False
     push_constant = True
+    push_instance = False
     dimension_value = 'test_all'
     debug_setup = True
     debug = True
@@ -160,7 +161,7 @@ class NonInteractiveTests(unittest.TestCase):
                                                                       self.flush_interval_in_seconds,
                                                                       self.access_key, self.secret_key,
                                                                       self.creds_path, self.installation_method,
-                                                                      self.push_asg, self.push_constant,
+                                                                      self.push_asg, self.push_constant, self.push_instance,
                                                                       self.dimension_value, self.debug_setup, self.debug)
 
         non_interactive_installer._configure_region_non_interactive()
@@ -198,3 +199,6 @@ class NonInteractiveTests(unittest.TestCase):
         non_interactive_installer._configure_push_constant_non_interactive()
         self.assertEquals(self.plugin_config.push_constant, self.push_constant)
         self.assertEquals(self.plugin_config.constant_dimension_value, self.dimension_value)
+
+        non_interactive_installer._configure_push_instance_non_interactive()
+        self.assertEquals(self.plugin_config.push_instance, self.push_instance)

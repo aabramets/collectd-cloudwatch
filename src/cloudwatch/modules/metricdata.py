@@ -131,6 +131,8 @@ class MetricDataBuilder(object):
             dimensions["AutoScalingGroup"] = self._get_autoscaling_group()
         if self.config.push_constant:
             dimensions["FixedDimension"] = self.config.constant_dimension_value
+        if self.config.push_instance:
+            dimensions["InstanceId"] = self.vl.host
         return dimensions
 
     def _get_plugin_instance_dimension(self):

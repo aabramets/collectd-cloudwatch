@@ -27,6 +27,7 @@ class ConfigReader(object):
     _PASS_THROUGH_DEFAULT_VALUE = False
     _PUSH_ASG_DEFAULT_VALUE = False
     _PUSH_CONSTANT_DEFAULT_VALUE = False
+    _PUSH_INSTANCE_DEFAULT_VALUE = False
     REGION_CONFIG_KEY = "region"
     HOST_CONFIG_KEY = "host"
     CREDENTIALS_PATH_KEY = "credentials_path"
@@ -35,6 +36,7 @@ class ConfigReader(object):
     PUSH_ASG_KEY = "push_asg"
     PUSH_CONSTANT_KEY = "push_constant"
     CONSTANT_DIMENSION_KEY = "constant_dimension_value"
+    PUSH_INSTANCE_KEY = "push_instance"
     PROXY_SERVER_NAME_KEY = "proxy_server_name"
     PROXY_SERVER_PORT_KEY = "proxy_server_port"
     ENABLE_HIGH_DEFINITION_METRICS = "enable_high_resolution_metrics"
@@ -50,6 +52,7 @@ class ConfigReader(object):
         self.push_asg = self._PUSH_ASG_DEFAULT_VALUE
         self.push_constant = self._PUSH_CONSTANT_DEFAULT_VALUE
         self.constant_dimension_value = ''
+        self.push_instance = self._PUSH_INSTANCE_DEFAULT_VALUE
         self.proxy_server_name=''
         self.proxy_server_port = ''
         self.enable_high_resolution_metrics = self._ENABLE_HIGH_DEFINITION_METRICS_DEFAULT_VALUE
@@ -78,3 +81,4 @@ class ConfigReader(object):
         self.push_asg = self.reader_utils.try_get_boolean(self.PUSH_ASG_KEY, self._PUSH_ASG_DEFAULT_VALUE)
         self.push_constant = self.reader_utils.try_get_boolean(self.PUSH_CONSTANT_KEY, self._PUSH_CONSTANT_DEFAULT_VALUE)
         self.constant_dimension_value = self.reader_utils.get_string(self.CONSTANT_DIMENSION_KEY)
+        self.push_instance = self.reader_utils.try_get_boolean(self.PUSH_INSTANCE_KEY, self._PUSH_INSTANCE_DEFAULT_VALUE)

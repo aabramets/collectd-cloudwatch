@@ -31,6 +31,7 @@ The default location of the configuration file used by collectd-cloudwatch plugi
  * __push_asg__ - Used to include the Auto-Scaling Group as a dimension for all metrics (see `Adding additional dimensions to metrics` below for details)
  * __push_constant__ - Used to include a Fixed dimension (see `constant_dimension_value` below) on all metrics. Useful for collating all metrics of a certain type (see `Adding additional dimensions to metrics` below for details)
  * __constant_dimension_value__ - Used to specify the value for the Fixed dimension (see `Adding additional dimensions to metrics` below for details)
+ * __push_instance__ - Used to include a instance id on all metrics. Useful when overriding host
  * __debug__ - Provides verbose logging of metrics emitted to CloudWatch
 
 #### Example configuration file
@@ -43,6 +44,7 @@ proxy_server_port = "8080"
 whitelist_pass_through = False
 push_asg = False
 push_constant = True
+push_instance = False
 constant_dimension_value = "ALL"
 debug = False
 enable_high_resolution_metrics = False

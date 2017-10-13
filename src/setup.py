@@ -287,6 +287,7 @@ class PluginConfig(object):
     PASS_THROUGH_KEY = "whitelist_pass_through"
     PUSH_ASG_KEY = "push_asg"
     PUSH_CONSTANT_KEY = "push_constant"
+    PUSH_INSTANCE_KEY = "push_instance"
     CONSTANT_DIMENSION_VALUE_KEY = "constant_dimension_value"
     DEBUG_KEY = "debug"
     ACCESS_KEY = "aws_access_key"
@@ -294,7 +295,7 @@ class PluginConfig(object):
     ENABLE_HIGH_DEFINITION_METRICS = "enable_high_resolution_metrics"
     FLUSH_INTERVAL_IN_SECONDS = "flush_interval_in_seconds"
 
-    def __init__(self, credentials_path=None, access_key=None, secret_key=None, region=None, host=None, proxy_server_name=None, proxy_server_port=None, push_asg=None, push_constant=None, constant_dimension_value=None, enable_high_resolution_metrics=False, flush_interval_in_seconds=None):
+    def __init__(self, credentials_path=None, access_key=None, secret_key=None, region=None, host=None, proxy_server_name=None, proxy_server_port=None, push_asg=None, push_constant=None, constant_dimension_value=None, push_instance=None, enable_high_resolution_metrics=False, flush_interval_in_seconds=None):
         self.credentials_path = credentials_path
         self.access_key = access_key
         self.secret_key = secret_key
@@ -312,6 +313,7 @@ class PluginConfig(object):
         self.push_asg = push_asg
         self.push_constant = push_constant
         self.constant_dimension_value = constant_dimension_value
+        self.push_instance = push_instance
 
 
 class InteractiveConfigurator(object):
@@ -322,7 +324,7 @@ class InteractiveConfigurator(object):
                  enable_high_resolution_metrics, flush_interval_in_seconds,
                  access_key, secret_key, creds_path,
                  installation_method, push_asg, push_constant, dimension_value,
-                 debug_setup, debug):
+                 push_instance, debug_setup, debug):
         self.config = plugin_config
         self.metadata_reader = metadata_reader
         self.collectd_info = collectd_info
@@ -340,6 +342,7 @@ class InteractiveConfigurator(object):
         self.push_asg = push_asg
         self.push_constant = push_constant
         self.dimension_value = dimension_value
+        self.push_instance = push_instance
         self.debug = debug
         self.debug_setup = debug_setup
 
@@ -352,6 +355,7 @@ class InteractiveConfigurator(object):
             self._configure_proxy_server_port_non_interactive()
             self._configure_push_asg_non_interactive()
             self._configure_push_constant_non_interactive()
+            self._configure_push_instance_non_interactive()
             self._configure_enable_high_resolution_metrics_non_interactive()
             self._configure_flush_interval_in_seconds_non_interactive()
             self._configure_plugin_installation_method_non_interactive()
@@ -366,6 +370,7 @@ class InteractiveConfigurator(object):
             self._configure_proxy_server_port()
             self._configure_push_asg()
             self._configure_push_constant()
+            self._configure_push_instance()
             self._configure_enable_high_resolution_metrics()
             self._configure_flush_interval_in_seconds()
             self._configure_plugin_installation_method()
@@ -400,6 +405,18 @@ class InteractiveConfigurator(object):
         if choice == "2":
             self.config.push_constant = True
             self.config.constant_dimension_value = self._get_constant_dimension_value()
+
+    def _configure_push_instance_non_interactive(self):
+        if self.push_asg:
+            self.config.push_instance = True
+        else:
+            self.config.push_instance = False
+
+    def _configure_push_instance(self):
+        self.config.push_instance = False
+        choice = Prompt("\nInclude the Instance Id as a metric dimension:", options=["No", "Yes"], default="1").run()
+        if choice == "2":
+            self.config.push_instance = True
 
     def _configure_region_non_interactive(self):
         if self.region:
@@ -592,6 +609,7 @@ class InteractiveConfigurator(object):
         logger.info('PUSH ASG: {}'.format(self.config.push_asg))
         logger.info('PUSH CONSTANT: {}'.format(self.config.push_constant))
         logger.info('CONSTANT DIMENSION VALUE: {}'.format(self.config.constant_dimension_value))
+        logger.info('PUSH INSTANCE: {}'.format(self.config.push_instance))
         logger.info('SECRET KEY: {}'.format(self.config.secret_key))
         logger.info('ACCESS KEY: {}'.format(self.config.access_key))
         logger.info('HOST: {}'.format(self.config.host))
@@ -671,6 +689,9 @@ $push_constant$
 # Constant dimension value to add to CWL
 $constant_dimension_value$
 
+# Whether or not to push the instance id value to CWM as a metric (useful when overriding host)
+$push_instance$
+
 # This parameter contains proxy server name to connect aws, if needed. Foramt is http[s]://PROXYHOST
 $proxy_server_name$
 
@@ -725,6 +746,7 @@ $flush_interval_in_seconds$
         config = self._replace_with_value(config, self.plugin_config.PUSH_ASG_KEY, self.plugin_config.push_asg)
         config = self._replace_with_value(config, self.plugin_config.PUSH_CONSTANT_KEY, self.plugin_config.push_constant)
         config = self._replace_with_value(config, self.plugin_config.CONSTANT_DIMENSION_VALUE_KEY, self.plugin_config.constant_dimension_value)
+        config = self._replace_with_value(config, self.plugin_config.PUSH_INSTANCE_KEY, self.plugin_config.push_instance)
         return config
 
     def _replace_with_value(self, string, key, value):
@@ -825,6 +847,11 @@ def main():
         metavar='DIMENSION_VALUE', default=None
     )
     parser.add_argument(
+        '-i', '--push_instance', required=False,
+        help='Include the Instance Id as a metric dimension',
+        default=None, action='store_true'
+    )
+    parser.add_argument(
         '-d', '--debug', default=False,
         action='store_true', help='Provides verbose logging of metrics emitted to CloudWatch'
     )
@@ -861,6 +888,7 @@ def main():
     push_asg = args.push_asg
     push_constant = args.push_constant
     dimension_value = args.dimension_value
+    push_instance = args.push_instance
     debug_setup = args.debug_setup
     debug = args.debug
 
@@ -908,8 +936,8 @@ def main():
                                 proxy_port, enable_high_resolution_metrics,
                                 flush_interval, access_key, secret_key,
                                 creds_path, installation_method, push_asg,
-                                push_constant, dimension_value, debug_setup,
-                                debug).run()
+                                push_instance, push_constant, dimension_value,
+                                debug_setup, debug).run()
         PluginConfigWriter(plugin_config).write()
 
     def _inject_plugin_configuration():

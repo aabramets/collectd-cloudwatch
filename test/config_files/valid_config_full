@@ -5,6 +5,7 @@ whitelist_pass_through = true
 debug = false
 push_asg = false
 push_constant = false
+push_instance = false
 proxy_server_name = server_name
 proxy_server_port = server_port
 enable_high_resolution_metrics = False

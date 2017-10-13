@@ -31,6 +31,7 @@ class MetricDataBuilderTest(unittest.TestCase):
         vl = self._get_vl_mock("CPU", "0", "CPU", "Steal")
         self.config_helper.push_asg = False
         self.config_helper.push_constant = False
+        self.config_helper.push_instance = False
         metric = MetricDataBuilder(self.config_helper, vl).build()
         self.assertEquals(None, metric[0].statistics)
         self.assertEquals("CPU.CPU.Steal", metric[0].metric_name)
@@ -42,6 +43,7 @@ class MetricDataBuilderTest(unittest.TestCase):
         vl = self._get_vl_mock("CPU", "0", "CPU", "Steal")
         self.config_helper.push_asg = True
         self.config_helper.push_constant = False
+        self.config_helper.push_instance = False
         self.config_helper.asg_name = "MyASG"
         metric = MetricDataBuilder(self.config_helper, vl).build()
         self.assertEquals(None, metric[0].statistics)
@@ -58,6 +60,7 @@ class MetricDataBuilderTest(unittest.TestCase):
         vl = self._get_vl_mock("CPU", "0", "CPU", "Steal")
         self.config_helper.push_asg = False
         self.config_helper.push_constant = True
+        self.config_helper.push_instance = False
         self.config_helper.constant_dimension_value = "somevalue"
         metric = MetricDataBuilder(self.config_helper, vl).build()
         self.assertEquals(None, metric[0].statistics)
@@ -75,6 +78,7 @@ class MetricDataBuilderTest(unittest.TestCase):
         self.config_helper.push_asg = True
         self.config_helper.asg_name = "MyASG"
         self.config_helper.push_constant = True
+        self.config_helper.push_instance = False
         self.config_helper.constant_dimension_value = "somevalue"
         metric = MetricDataBuilder(self.config_helper, vl).build()
         self.assertEquals(None, metric[0].statistics)
@@ -95,6 +99,7 @@ class MetricDataBuilderTest(unittest.TestCase):
         self.config_helper = MagicMock()
         self.config_helper.push_asg = False
         self.config_helper.push_constant = False
+        self.config_helper.push_instance = False
         self.config_helper.endpoint = "valid_endpoint"
         self.config_helper.host = "valid_host"
         self.config_helper.region = "localhost"

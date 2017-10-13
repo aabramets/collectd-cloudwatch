@@ -5,4 +5,5 @@ whitelist_pass_through = true
 debug = false
 push_asg = true
 push_constant = true
+push_instance = false
 constant_dimension_value = potato
